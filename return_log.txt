@@ -1,0 +1,10 @@
+Array
+(
+    [message] => Teste de agendamento
+)
+Array
+(
+    [status] => processed
+    [response_code] => 200
+    [response_body] => {"status":"Retorno recebido"}
+)

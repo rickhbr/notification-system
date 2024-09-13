@@ -15,26 +15,37 @@ class ProcessNotificationJob implements ShouldQueue
 
     protected $payload;
     protected $endpoint;
+    protected $returnResponse;
 
     /**
-     * Create a new job instance.
+     * Cria uma nova instância do Job.
      *
      * @return void
      */
-    public function __construct($payload, $endpoint)
+    public function __construct($payload, $endpoint, $returnResponse = false)
     {
         $this->payload = $payload;
         $this->endpoint = $endpoint;
+        $this->returnResponse = $returnResponse;
     }
 
     /**
-     * Execute the job.
+     * Executa o Job.
      *
      * @return void
      */
     public function handle()
     {
-        // Enviar a solicitação HTTP para o endpoint com o payload
-        Http::post($this->endpoint, $this->payload);
+        // Envia a solicitação para o endpoint com o payload
+        $response = Http::post($this->endpoint, $this->payload);
+
+        // Se o endpoint quer o retorno, envia de volta
+        if ($this->returnResponse) {
+            Http::post($this->endpoint, [
+                'status' => 'processed',
+                'response_code' => $response->status(),
+                'response_body' => $response->body()
+            ]);
+        }
     }
 }
